@@ -1,6 +1,11 @@
 #include "DigiKeyboard.h"
 #include <avr/pgmspace.h>
 
+// Define pgm_read_ptr if not defined (safe way to read pointer from PROGMEM)
+#ifndef pgm_read_ptr
+#define pgm_read_ptr(addr) ((void*)pgm_read_word(addr))
+#endif
+
 const char quote0[] PROGMEM = "You have the right to perform your prescribed duties, but you are not entitled to the fruits of your actions.";
 const char quote1[] PROGMEM = "Set thy heart upon thy work, but never on its reward.";
 const char quote2[] PROGMEM = "For one who has conquered his mind, a mind is best of friends, but for one who has failed to do so, a mind is the greatest enemy.";
@@ -40,8 +45,6 @@ const char q17[] PROGMEM = "Self-control is the path to supreme happiness. (6.16
 const char q18[] PROGMEM = "Work done as duty without desire is purifying. (3.19)";
 const char q19[] PROGMEM = "Those who perform their duty without attachment, surrendering results, attain peace. (5.10)";
 
-
-
 const char* const quotes[] PROGMEM = {
   quote0, quote1, quote2, quote3, quote4, quote5, quote6, quote7,
   quote8, quote9, quote10, quote11, quote12, quote13, quote14, quote15, quote16, quote17,
@@ -57,11 +60,11 @@ void setup() {
   randomSeed(analogRead(0));
   uint8_t index = random(quotesCount);
 
-  // Read the pointer to the selected quote from PROGMEM
-  const char* quotePtr = (const char*)pgm_read_word(&(quotes[index]));
+  // Read the pointer to the selected quote from PROGMEM safely
+  const char* quotePtr = (const char*) pgm_read_ptr(&(quotes[index]));
 
   // Buffer to hold the quote text temporarily
-  char buffer[150]; // Ensure this is large enough for your longest quote
+  char buffer[150];
   uint8_t i = 0;
   char c;
 
@@ -80,3 +83,5 @@ void setup() {
 void loop() {
   // Nothing here
 }
+
+// Testing -- perform every action with your heart fixed on the Supreme Lord. Renounce attachment to the fruits. Be even-tempered in success and failure.Perform every action with your heart fixed on the Supreme Lord. Renounce attachment to the fruits. Be even-tempered in success and failure.
