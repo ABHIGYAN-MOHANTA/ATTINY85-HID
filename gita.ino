@@ -1,7 +1,6 @@
 #include "DigiKeyboard.h"
 #include <avr/pgmspace.h>
 
-// Define pgm_read_ptr if not defined (safe way to read pointer from PROGMEM)
 #ifndef pgm_read_ptr
 #define pgm_read_ptr(addr) ((void*)pgm_read_word(addr))
 #endif
@@ -57,18 +56,23 @@ const uint8_t quotesCount = sizeof(quotes) / sizeof(quotes[0]);
 void setup() {
   DigiKeyboard.delay(1000);
   DigiKeyboard.sendKeyStroke(0);
-  randomSeed(analogRead(0));
+
+  // Better random seed from analog noise on A0
+  long seed = 0;
+  for (int i = 0; i < 8; i++) {
+    seed ^= analogRead(A0) << i;
+    DigiKeyboard.delay(5);
+  }
+  randomSeed(seed);
+
   uint8_t index = random(quotesCount);
 
-  // Read the pointer to the selected quote from PROGMEM safely
   const char* quotePtr = (const char*) pgm_read_ptr(&(quotes[index]));
 
-  // Buffer to hold the quote text temporarily
   char buffer[150];
   uint8_t i = 0;
   char c;
 
-  // Read the quote string from PROGMEM one char at a time
   do {
     c = pgm_read_byte(&(quotePtr[i]));
     buffer[i] = c;
@@ -83,5 +87,3 @@ void setup() {
 void loop() {
   // Nothing here
 }
-
-// Testing -- perform every action with your heart fixed on the Supreme Lord. Renounce attachment to the fruits. Be even-tempered in success and failure.Perform every action with your heart fixed on the Supreme Lord. Renounce attachment to the fruits. Be even-tempered in success and failure.
